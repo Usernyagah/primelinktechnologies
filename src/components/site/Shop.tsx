@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { products, categories, Category } from "@/data/products";
 import { ProductCard } from "./ProductCard";
 
-const filters: ("All" | Category)[] = ["All", ...categories.map((c) => c.name)];
+const filters: ("All" | "Featured" | Category)[] = ["All", "Featured", ...categories.map((c) => c.name)];
 
 export const Shop = ({ query }: { query: string }) => {
   const [active, setActive] = useState<(typeof filters)[number]>("All");
@@ -10,7 +10,7 @@ export const Shop = ({ query }: { query: string }) => {
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
-      const matchCat = active === "All" || p.category === active;
+      const matchCat = active === "All" || (active === "Featured" ? p.featured : p.category === active);
       const matchQ = !q || p.name.toLowerCase().includes(q) || p.specs.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
       return matchCat && matchQ;
     });
