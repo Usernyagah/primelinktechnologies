@@ -25,7 +25,7 @@ export const Navbar = ({ onSearch, query }: Props) => {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
       <div className="container-px flex h-16 items-center gap-6">
         <a href="#home" className="flex items-center gap-2 shrink-0">
-          <span className="grid h-8 w-8 place-items-center rounded-md accent-gradient text-accent-foreground font-bold">P</span>
+          <img src="/logo.png" alt="Prime Link Logo" className="h-10 w-10 object-cover rounded-md" />
           <span className="hidden sm:block text-sm font-semibold tracking-tight">
             Prime Link <span className="text-muted-foreground font-normal">Technologies</span>
           </span>
