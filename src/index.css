@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prime Link Technologies — Dark premium tech design system.
+   All colors MUST be HSL. */
+
+@layer base {
+  :root {
+    /* Brand: Deep Blue #001F3F, Bright Blue #007BFF, Black #000, Dark gray #121212 */
+    --background: 0 0% 7%;            /* #121212 */
+    --foreground: 0 0% 98%;
+
+    --surface: 0 0% 4%;               /* near pure black */
+    --surface-elevated: 213 100% 6%;  /* deep navy tint */
+
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 211 100% 12%;          /* Deep Blue #001F3F */
+    --primary-foreground: 0 0% 100%;
+
+    --accent: 211 100% 50%;           /* Bright Blue #007BFF */
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 211 100% 56%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 62%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 16%;
+    --input: 0 0% 14%;
+    --ring: 211 100% 50%;
+
+    --radius: 0.625rem;
+
+    /* Effects */
+    --gradient-hero: radial-gradient(ellipse at top right, hsl(211 100% 18% / 0.55), transparent 60%),
+                     radial-gradient(ellipse at bottom left, hsl(211 100% 50% / 0.12), transparent 55%),
+                     linear-gradient(180deg, hsl(0 0% 4%), hsl(0 0% 7%));
+    --gradient-accent: linear-gradient(135deg, hsl(211 100% 50%), hsl(211 100% 38%));
+    --shadow-card: 0 1px 0 hsl(0 0% 100% / 0.04) inset, 0 20px 40px -20px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 0 1px hsl(211 100% 50% / 0.35), 0 12px 40px -10px hsl(211 100% 50% / 0.45);
+    --transition-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Sidebar (unused but defined) */
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 211 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 16%;
+    --sidebar-ring: 211 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+  h1, h2, h3, h4 {
+    @apply tracking-tight;
+    font-feature-settings: 'ss01';
+  }
+  ::selection {
+    background: hsl(var(--accent) / 0.35);
+  }
+}
+
+@layer components {
+  .container-px {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+  }
+  .hero-bg {
+    background: var(--gradient-hero);
+  }
+  .accent-gradient {
+    background: var(--gradient-accent);
+  }
+  .card-hover {
+    transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--accent) / 0.6);
+    box-shadow: var(--shadow-glow);
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-accent;
+  }
+}
