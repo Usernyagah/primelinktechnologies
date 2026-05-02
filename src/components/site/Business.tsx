@@ -2,9 +2,11 @@ import { Check, ArrowRight } from "lucide-react";
 import softwareImg from "@/assets/cat-software.jpg";
 
 const points = [
+  "Websites, E-commerce, and Digital Storefronts",
+  "Custom ERPs tailored to your business workflow",
+  "Advanced Analytics Dashboards for real-time reporting",
   "KRA-compliant ETR machines with on-site setup and training",
-  "POS, accounting and inventory software tailored to your workflow",
-  "Multi-branch support, real-time reporting and offline resilience",
+  "POS, accounting, and inventory management software",
   "Local technical support with same-day response in major towns",
 ];
 

@@ -3,13 +3,13 @@ const team = [
     name: "Peter Njuguna",
     role: "Co-founder & CEO",
     bio: "Leads strategy, partnerships and customer success across Prime Link Technologies.",
-    initials: "PN",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
   },
   {
     name: "Dennis Nyagah",
-    role: "Chief Technology Officer",
+    role: "Co-founder & CTO",
     bio: "Heads engineering, product and the technical infrastructure powering our solutions.",
-    initials: "DN",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400",
   },
 ];
 
@@ -23,16 +23,16 @@ export const Leadership = () => (
           A small, focused team building reliable technology for businesses and individuals.
         </p>
       </div>
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 max-w-3xl">
+      <div className="mt-12 grid gap-6 lg:grid-cols-2 max-w-5xl">
         {team.map((m) => (
-          <article key={m.name} className="card-hover rounded-xl border border-border bg-card p-6 flex items-start gap-5">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full accent-gradient text-accent-foreground font-semibold text-sm">
-              {m.initials}
+          <article key={m.name} className="card-hover rounded-xl border border-border bg-card overflow-hidden flex flex-col sm:flex-row items-stretch">
+            <div className="shrink-0 bg-muted/50 sm:w-48 h-48 sm:h-auto">
+              <img src={m.image} alt={m.name} className="h-full w-full object-cover" />
             </div>
-            <div>
-              <h3 className="font-semibold">{m.name}</h3>
-              <p className="text-xs uppercase tracking-wider text-accent mt-1">{m.role}</p>
-              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
+            <div className="flex-1 p-6 flex flex-col justify-center">
+              <h3 className="text-xl font-semibold">{m.name}</h3>
+              <p className="text-sm font-medium tracking-wide text-accent mt-1">{m.role}</p>
+              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
             </div>
           </article>
         ))}
