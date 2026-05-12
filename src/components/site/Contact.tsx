@@ -38,7 +38,8 @@ export const Contact = () => {
           </p>
           <ul className="mt-8 space-y-4 text-sm">
             <li className="flex items-center gap-3"><Mail className="h-4 w-4 text-accent" /> sales@primelinktech.co</li>
-            <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" /> +254 700 000 000</li>
+            <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" /> +254 703 617 164</li>
+            <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" /> +254 742 628 137</li>
             <li className="flex items-center gap-3"><MapPin className="h-4 w-4 text-accent" /> Nairobi, Kenya</li>
           </ul>
         </div>

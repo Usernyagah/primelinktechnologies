@@ -19,7 +19,8 @@ export const Footer = () => (
           </p>
           <div className="mt-6 text-sm text-muted-foreground space-y-1">
             <p>sales@primelinktech.co</p>
-            <p>+254 700 000 000</p>
+            <p>+254 703 617 164</p>
+            <p>+254 742 628 137</p>
             <p>Nairobi, Kenya</p>
           </div>
         </div>

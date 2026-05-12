@@ -4,11 +4,11 @@ import { useCart } from "@/context/CartContext";
 import { Link } from "react-router-dom";
 
 const links = [
-  { label: "Home", href: "/" },
-  { label: "Products", href: "/products" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", hash: "home" },
+  { label: "Products", hash: "products" },
+  { label: "Services", hash: "services" },
+  { label: "About", hash: "about" },
+  { label: "Contact", hash: "contact" },
 ];
 
 interface Props {
@@ -21,21 +21,39 @@ export const Navbar = ({ onSearch, query }: Props) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  const handleNavClick = (hash: string) => {
+    setMobileOpen(false);
+    const el = document.getElementById(hash);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
       <div className="container-px flex h-16 items-center gap-6">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
+        <Link to="/" className="flex items-center gap-2 shrink-0" onClick={() => handleNavClick("home")}>
           <img src="/logo.png" alt="Prime Link Logo" className="h-10 w-10 object-cover rounded-md" />
-          <span className="hidden sm:block text-sm font-semibold tracking-tight">
-            Prime Link <span className="text-muted-foreground font-normal">Technologies</span>
+          <span className="hidden sm:flex flex-col leading-none">
+            <span className="text-sm font-bold tracking-tight">Prime Link</span>
+            <span
+              className="text-[10px] tracking-widest text-accent uppercase"
+              style={{ fontFamily: "'Orbitron', sans-serif", letterSpacing: "0.22em" }}
+            >
+              Technologies
+            </span>
           </span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-7 text-sm">
           {links.map((l) => (
-            <Link key={l.href} to={l.href} className="text-muted-foreground hover:text-foreground transition-colors">
+            <button
+              key={l.hash}
+              onClick={() => handleNavClick(l.hash)}
+              className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none"
+            >
               {l.label}
-            </Link>
+            </button>
           ))}
         </nav>
 
@@ -99,14 +117,13 @@ export const Navbar = ({ onSearch, query }: Props) => {
       {mobileOpen && (
         <nav className="lg:hidden border-t border-border/60 px-5 py-4 flex flex-col gap-1">
           {links.map((l) => (
-            <Link
-              key={l.href}
-              to={l.href}
-              onClick={() => setMobileOpen(false)}
-              className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            <button
+              key={l.hash}
+              onClick={() => handleNavClick(l.hash)}
+              className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-left w-full bg-transparent border-none cursor-pointer"
             >
               {l.label}
-            </Link>
+            </button>
           ))}
         </nav>
       )}
