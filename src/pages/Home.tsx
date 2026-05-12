@@ -18,7 +18,6 @@ export const Home = () => {
       <section id="home">
         <Hero />
         <Deals />
-        <Testimonials />
       </section>
 
       {/* Products */}
@@ -51,6 +50,9 @@ export const Home = () => {
         </div>
         <Leadership />
       </section>
+
+      {/* Testimonials — just above the footer */}
+      <Testimonials />
 
       {/* Contact */}
       <section id="contact">
