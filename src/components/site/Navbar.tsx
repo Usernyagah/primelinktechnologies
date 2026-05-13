@@ -55,6 +55,9 @@ export const Navbar = ({ onSearch, query }: Props) => {
               {l.label}
             </button>
           ))}
+          <Link to="/admin/login" className="text-accent/80 hover:text-accent transition-colors font-medium">
+            Admin
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
@@ -125,6 +128,13 @@ export const Navbar = ({ onSearch, query }: Props) => {
               {l.label}
             </button>
           ))}
+          <Link
+            to="/admin/login"
+            onClick={() => setMobileOpen(false)}
+            className="rounded-md px-3 py-2 text-sm text-accent hover:bg-accent/10 transition-colors text-left w-full font-medium"
+          >
+            Admin Login
+          </Link>
         </nav>
       )}
     </header>

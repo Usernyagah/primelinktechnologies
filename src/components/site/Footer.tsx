@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const cols = [
   { title: "Shop", links: ["Phones", "Laptops & Desktops", "Tablets", "ETR Machines", "Business Software"] },
   { title: "Business", links: ["POS Systems", "Accounting", "Inventory", "ETR Compliance", "Bulk orders"] },
@@ -44,7 +46,7 @@ export const Footer = () => (
         <div className="flex gap-6">
           <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
           <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-          <a href="#" className="hover:text-foreground transition-colors">Cookies</a>
+          <Link to="/admin/login" className="hover:text-foreground transition-colors">Admin Portal</Link>
         </div>
       </div>
     </div>
