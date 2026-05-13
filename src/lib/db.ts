@@ -48,26 +48,3 @@ export const productsApi = {
     await deleteDoc(doc(db, "products", id));
   }
 };
-
-export const servicesApi = {
-  list: async () => {
-    const servicesRef = collection(db, "services");
-    const querySnapshot = await getDocs(servicesRef);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  },
-  
-  create: async (data: any) => {
-    const docRef = await addDoc(collection(db, "services"), data);
-    return { id: docRef.id, ...data };
-  },
-  
-  update: async (data: any) => {
-    const { id, ...rest } = data;
-    const docRef = doc(db, "services", id);
-    await updateDoc(docRef, rest);
-  },
-  
-  delete: async (id: string) => {
-    await deleteDoc(doc(db, "services", id));
-  }
-};
