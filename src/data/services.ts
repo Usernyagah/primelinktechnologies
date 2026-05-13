@@ -39,7 +39,7 @@ export const services: Service[] = [
     id: "5",
     title: "Networking & Infrastructure",
     description: "Robust and secure network architecture design and implementation for modern digital enterprises.",
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc48?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800&auto=format&fit=crop",
     icon: "Network"
   },
   {
