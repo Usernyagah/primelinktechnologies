@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home.tsx";
+import ProductDetail from "./pages/ProductDetail.tsx";
 import AdminLogin from "./pages/AdminLogin.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import AdminMessages from "./pages/AdminMessages.tsx";
@@ -27,6 +28,7 @@ const App = () => (
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
                 {/* Redirect old routes to home — sections are accessible by scrolling */}
                 <Route path="/products" element={<Navigate to="/" replace />} />
                 <Route path="/services" element={<Navigate to="/" replace />} />

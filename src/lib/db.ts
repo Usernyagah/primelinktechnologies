@@ -1,6 +1,7 @@
 import {
   collection,
   getDocs,
+  getDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -67,6 +68,17 @@ export const productsApi = {
     return querySnapshot.docs.map((d) =>
       normalizeProduct({ id: d.id, ...d.data() })
     );
+  },
+
+  get: async (id: string): Promise<Product | null> => {
+    if (!isFirebaseConfigured || !db) {
+      const found = seedProducts.find((p) => p.id === id);
+      return found ? normalizeProduct({ ...found }) : null;
+    }
+
+    const snap = await getDoc(doc(db, "products", id));
+    if (!snap.exists()) return null;
+    return normalizeProduct({ id: snap.id, ...snap.data() });
   },
 
   create: async (data: Product) => {
