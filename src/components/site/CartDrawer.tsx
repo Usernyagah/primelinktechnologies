@@ -1,5 +1,6 @@
 import { useCart } from "@/context/CartContext";
 import { formatKES } from "@/data/products";
+import { getProductPrimaryImage } from "@/lib/product-utils";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useEffect } from "react";
 
@@ -49,7 +50,7 @@ export const CartDrawer = () => {
             <ul className="divide-y divide-border">
               {items.map((i) => (
                 <li key={i.product.id} className="p-5 flex gap-4">
-                  <img src={i.product.image} alt={i.product.name} className="h-20 w-20 rounded-md object-cover bg-secondary" loading="lazy" width={80} height={80} />
+                  <img src={getProductPrimaryImage(i.product)} alt={i.product.name} className="h-20 w-20 rounded-md object-cover bg-secondary" loading="lazy" width={80} height={80} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">{i.product.name}</p>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">{i.product.specs}</p>

@@ -10,6 +10,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home.tsx";
 import AdminLogin from "./pages/AdminLogin.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
+import AdminMessages from "./pages/AdminMessages.tsx";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -35,7 +37,10 @@ const App = () => (
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route element={<ProtectedRoute />}>
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route element={<AdminLayout />}>
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/messages" element={<AdminMessages />} />
+                </Route>
               </Route>
 
               <Route path="*" element={<NotFound />} />
