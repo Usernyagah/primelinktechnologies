@@ -18,8 +18,58 @@ Welcome to the **Prime Link Technologies** repository! This is a modern, respons
 - **Vite** (Build Tool & Dev Server)
 - **Tailwind CSS** (Styling & Layout)
 - **TypeScript** (Static Typing)
+- **Firebase** (Auth + Firestore — Spark free tier)
+- **Cloudinary** (Product image uploads — free tier)
 - **Lucide React** (Icons)
 - **Radix UI** (Accessible primitives)
+
+## Backend (Firebase + Cloudinary)
+
+This app uses **Firebase** for data and admin auth, and **Cloudinary** for product images. Both have generous free tiers suitable for a small business site.
+
+| Service | Free tier use |
+|--------|----------------|
+| **Firebase Auth** | Admin login at `/admin/login` |
+| **Firestore** | Products catalog + contact form submissions |
+| **Cloudinary** | Unsigned image uploads from the admin dashboard |
+
+### 1. Firebase (Spark plan)
+
+1. Create a project at [Firebase Console](https://console.firebase.google.com/) and choose the **Spark (free)** plan.
+2. Enable **Authentication** → Sign-in method → **Email/Password**.
+3. Create an admin user under **Authentication** → **Users** → **Add user**.
+4. Enable **Firestore Database** → Create database → start in **production mode**.
+5. Register a **Web app** and copy the config into `.env` (see `.env.example`).
+6. Deploy security rules (requires [Firebase CLI](https://firebase.google.com/docs/cli)):
+   ```bash
+   firebase login
+   firebase use your_project_id
+   firebase deploy --only firestore:rules
+   ```
+
+### 2. Cloudinary (free tier)
+
+1. Sign up at [Cloudinary](https://cloudinary.com/).
+2. Note your **Cloud name** from the dashboard.
+3. Go to **Settings** → **Upload** → **Upload presets** → **Add upload preset**:
+   - Set **Signing Mode** to **Unsigned** (required for browser uploads without a secret).
+   - Optionally set a folder name; the app uploads to `primelink-products`.
+4. Add `VITE_CLOUDINARY_CLOUD_NAME` and `VITE_CLOUDINARY_UPLOAD_PRESET` to `.env`.
+
+### 3. Environment variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Without Firebase configured, the shop shows **seed products** from `src/data/products.ts` (read-only). Admin writes and the contact form require Firebase. Without Cloudinary, product image uploads in admin will not work.
+
+### Firestore collections
+
+- `products` — catalog (public read, admin write)
+- `contactMessages` — contact form (public create, admin read)
 
 ## Getting Started
 

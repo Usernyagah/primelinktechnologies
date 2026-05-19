@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
+import { uploadImage, isCloudinaryConfigured } from '@/lib/cloudinary';
+import { toast } from 'sonner';
 
 interface ImageUploadProps {
   onUpload: (url: string) => void;
@@ -15,29 +16,23 @@ export const ImageUpload = ({ onUpload, defaultValue }: ImageUploadProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!isCloudinaryConfigured) {
+      toast.error('Cloudinary is not configured. Add your upload preset to .env');
+      return;
+    }
+
     setIsUploading(true);
     try {
-      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ml_default';
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
-
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        { method: 'POST', body: formData }
-      );
-
-      const data = await response.json();
-      if (data.secure_url) {
-        setPreview(data.secure_url);
-        onUpload(data.secure_url);
-      }
+      const url = await uploadImage(file);
+      setPreview(url);
+      onUpload(url);
+      toast.success('Image uploaded');
     } catch (error) {
       console.error('Upload failed:', error);
+      toast.error(error instanceof Error ? error.message : 'Upload failed');
     } finally {
       setIsUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -52,6 +47,7 @@ export const ImageUpload = ({ onUpload, defaultValue }: ImageUploadProps) => {
         <div className="relative aspect-video rounded-lg overflow-hidden border border-border group">
           <img src={preview} alt="Preview" className="w-full h-full object-cover" />
           <button
+            type="button"
             onClick={clear}
             className="absolute top-2 right-2 p-1 bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
           >

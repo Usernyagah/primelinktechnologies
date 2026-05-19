@@ -1,20 +1,72 @@
+import { useState } from "react";
 import { Product, formatKES } from "@/data/products";
+import { getProductImages } from "@/lib/product-utils";
 import { useCart } from "@/context/CartContext";
-import { Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 export const ProductCard = ({ product }: { product: Product }) => {
   const { add } = useCart();
+  const images = getProductImages(product);
+  const [index, setIndex] = useState(0);
+  const hasGallery = images.length > 1;
+
+  const prev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+  };
+
+  const next = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIndex((i) => (i === images.length - 1 ? 0 : i + 1));
+  };
+
   return (
     <article className="group card-hover rounded-xl border border-border bg-card overflow-hidden flex flex-col">
       <div className="relative aspect-square overflow-hidden bg-surface">
         <img
-          src={product.image}
+          src={images[index]}
           alt={`${product.name} — ${product.category}`}
           loading="lazy"
           width={800}
           height={800}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
+        {hasGallery && (
+          <>
+            <button
+              type="button"
+              onClick={prev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-1 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIndex(i);
+                  }}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === index ? "w-4 bg-accent" : "w-1.5 bg-background/70"
+                  }`}
+                  aria-label={`Show image ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
         {product.badge && (
           <span className="absolute top-3 left-3 rounded-md bg-background/80 backdrop-blur px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent border border-accent/30">
             {product.badge}

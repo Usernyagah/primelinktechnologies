@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { contactApi } from "@/lib/db";
+import { isFirebaseConfigured } from "@/lib/firebase";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(100),
@@ -12,8 +14,9 @@ const schema = z.object({
 export const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = schema.safeParse(form);
     if (!result.success) {
@@ -23,8 +26,23 @@ export const Contact = () => {
       return;
     }
     setErrors({});
-    toast.success("Thanks — we'll get back to you within one business day.");
-    setForm({ name: "", email: "", message: "" });
+
+    if (!isFirebaseConfigured) {
+      toast.error("Contact form is unavailable. Firebase is not configured.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await contactApi.submit(result.data);
+      toast.success("Thanks — we'll get back to you within one business day.");
+      setForm({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Contact submit failed:", error);
+      toast.error("Could not send your message. Please try again or email us directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -79,8 +97,13 @@ export const Contact = () => {
             />
             {errors.message && <p className="mt-1 text-xs text-destructive">{errors.message}</p>}
           </div>
-          <button type="submit" className="mt-2 inline-flex items-center justify-center rounded-md accent-gradient px-5 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition-all">
-            Send message
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="mt-2 inline-flex items-center justify-center gap-2 rounded-md accent-gradient px-5 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition-all disabled:opacity-60"
+          >
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isSubmitting ? "Sending..." : "Send message"}
           </button>
         </form>
       </div>

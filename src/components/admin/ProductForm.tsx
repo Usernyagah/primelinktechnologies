@@ -20,7 +20,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ImageUpload } from './ImageUpload';
+import { MultiImageUpload } from './MultiImageUpload';
+import { getProductImages } from '@/lib/product-utils';
+import type { Product } from '@/data/products';
 
 const productSchema = z.object({
   id: z.string().min(1, 'ID is required'),
@@ -28,16 +30,25 @@ const productSchema = z.object({
   category: z.enum(['Phones', 'Laptops', 'Tablets']),
   price: z.coerce.number().min(0),
   specs: z.string().min(5, 'Specs are required'),
-  image: z.string().url('Image is required'),
-  badge: z.enum(['Best Seller', 'New', 'Deal', '']).optional(),
+  images: z.array(z.string().url()).min(1, 'Add at least one image'),
+  badge: z.enum(['Best Seller', 'New', 'Deal', 'none']).default('none'),
   featured: z.boolean().default(false),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
 
+type ProductPayload = Omit<ProductFormValues, 'badge'> & {
+  badge?: 'Best Seller' | 'New' | 'Deal';
+};
+
+function toProductPayload(values: ProductFormValues): ProductPayload {
+  const { badge, ...rest } = values;
+  return badge === 'none' ? rest : { ...rest, badge };
+}
+
 interface ProductFormProps {
-  initialValues?: Partial<ProductFormValues>;
-  onSubmit: (values: ProductFormValues) => void;
+  initialValues?: Partial<ProductPayload>;
+  onSubmit: (values: ProductPayload) => void;
   isLoading?: boolean;
 }
 
@@ -50,15 +61,15 @@ export const ProductForm = ({ initialValues, onSubmit, isLoading }: ProductFormP
       category: (initialValues?.category as any) || 'Phones',
       price: initialValues?.price || 0,
       specs: initialValues?.specs || '',
-      image: initialValues?.image || '',
-      badge: initialValues?.badge || '',
+      images: initialValues ? getProductImages(initialValues as Product) : [],
+      badge: initialValues?.badge ?? 'none',
       featured: initialValues?.featured || false,
     },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit((values) => onSubmit(toProductPayload(values)))} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -79,7 +90,7 @@ export const ProductForm = ({ initialValues, onSubmit, isLoading }: ProductFormP
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -131,14 +142,14 @@ export const ProductForm = ({ initialValues, onSubmit, isLoading }: ProductFormP
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Badge (Optional)</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="No badge" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     <SelectItem value="Best Seller">Best Seller</SelectItem>
                     <SelectItem value="New">New</SelectItem>
                     <SelectItem value="Deal">Deal</SelectItem>
@@ -166,12 +177,12 @@ export const ProductForm = ({ initialValues, onSubmit, isLoading }: ProductFormP
 
         <FormField
           control={form.control}
-          name="image"
+          name="images"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Image</FormLabel>
+              <FormLabel>Product Images</FormLabel>
               <FormControl>
-                <ImageUpload onUpload={field.onChange} defaultValue={field.value} />
+                <MultiImageUpload value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
