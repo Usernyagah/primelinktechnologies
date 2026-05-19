@@ -13,7 +13,7 @@ import {
   type Firestore,
   type Timestamp,
 } from "firebase/firestore";
-import { db, isFirebaseConfigured } from "./firebase";
+import { db, isFirebaseConfigured, getFirebaseSetupMessage } from "./firebase";
 import { products as seedProducts, type Product } from "@/data/products";
 import { normalizeProduct } from "@/lib/product-utils";
 
@@ -39,7 +39,8 @@ function filterSeedProducts(category?: string): Product[] {
 function requireDb(): Firestore {
   if (!db) {
     throw new Error(
-      "Firebase is not configured. Add your VITE_FIREBASE_* variables to .env"
+      getFirebaseSetupMessage() ||
+        "Firebase is not configured. Add your VITE_FIREBASE_* variables to .env"
     );
   }
   return db;

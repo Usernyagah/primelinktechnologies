@@ -3,7 +3,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { contactApi } from "@/lib/db";
-import { isFirebaseConfigured } from "@/lib/firebase";
+import { isFirebaseConfigured, getFirebaseSetupMessage } from "@/lib/firebase";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(100),
@@ -28,7 +28,7 @@ export const Contact = () => {
     setErrors({});
 
     if (!isFirebaseConfigured) {
-      toast.error("Contact form is unavailable. Firebase is not configured.");
+      toast.error(getFirebaseSetupMessage() || "Contact form is unavailable.");
       return;
     }
 
