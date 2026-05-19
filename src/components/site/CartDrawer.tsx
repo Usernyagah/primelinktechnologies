@@ -3,6 +3,7 @@ import { formatKES } from "@/data/products";
 import { getProductPrimaryImage } from "@/lib/product-utils";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export const CartDrawer = () => {
   const { open, setOpen, items, inc, dec, remove, total, clear } = useCart();
@@ -79,9 +80,13 @@ export const CartDrawer = () => {
               <span className="font-semibold text-base tabular-nums">{formatKES(total)}</span>
             </div>
             <p className="text-xs text-muted-foreground">Shipping and taxes calculated at checkout.</p>
-            <button className="w-full rounded-md accent-gradient px-5 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition-all">
+            <Link
+              to="/checkout"
+              onClick={() => setOpen(false)}
+              className="block w-full text-center rounded-md accent-gradient px-5 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition-all"
+            >
               Proceed to checkout
-            </button>
+            </Link>
             <button onClick={clear} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors">
               Clear cart
             </button>

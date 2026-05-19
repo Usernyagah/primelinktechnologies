@@ -70,6 +70,24 @@ Without Firebase configured, the shop shows **seed products** from `src/data/pro
 
 - `products` — catalog (public read, admin write)
 - `contactMessages` — contact form (public create, admin read)
+- `orders` — checkout / M-Pesa payments (public create, admin read)
+
+### M-Pesa checkout (Daraja API)
+
+Checkout uses **Safaricom STK Push** via Vercel serverless functions (`/api/mpesa/stk-push`).
+
+1. Create an app at [Safaricom Daraja](https://developer.safaricom.co.ke/).
+2. Enable **Lipa Na M-Pesa Online** and note your **Passkey**, **Consumer Key**, and **Consumer Secret**.
+3. In **Vercel → Settings → Environment Variables**, add (see `.env.example`):
+   - `MPESA_CONSUMER_KEY`, `MPESA_CONSUMER_SECRET`, `MPESA_SHORTCODE`, `MPESA_PASSKEY`
+   - `MPESA_ENV` — `sandbox` for testing, `production` when live
+   - `MPESA_CALLBACK_URL` — `https://primelinktechnologies.vercel.app/api/mpesa/callback`
+4. Redeploy after adding variables.
+5. **Sandbox test phone:** `254708374149` (use in checkout).
+
+Optional: set `FIREBASE_SERVICE_ACCOUNT` (JSON) in Vercel so paid orders update automatically when M-Pesa sends the callback.
+
+Deploy Firestore rules: `firebase deploy --only firestore:rules`
 
 ## Getting Started
 
