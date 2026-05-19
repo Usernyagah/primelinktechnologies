@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lock, Mail, Key } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, isFirebaseConfigured } from '@/lib/firebase';
+import { auth, isFirebaseConfigured, getFirebaseSetupMessage } from '@/lib/firebase';
 import { toast } from 'sonner';
 
 const AdminLogin = () => {
@@ -25,7 +25,7 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     if (!isFirebaseConfigured || !auth) {
-      toast.error('Firebase is not configured. Add VITE_FIREBASE_* to your .env file.');
+      toast.error(getFirebaseSetupMessage() || 'Firebase is not configured.');
       setLoading(false);
       return;
     }
