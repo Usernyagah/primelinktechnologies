@@ -2,7 +2,7 @@ import heroImg from "@/assets/hero-devices.jpg";
 import { ArrowRight } from "lucide-react";
 
 export const Hero = () => (
-  <section id="home" className="relative overflow-hidden hero-bg">
+  <section id="home" className="relative overflow-hidden bg-[#0a0f1c]">
     <div className="container-px grid lg:grid-cols-12 gap-10 py-20 lg:py-28 items-center">
       <div className="lg:col-span-6 animate-fade-up">
         <span className="eyebrow"><span className="h-1 w-1 rounded-full bg-accent" /> Reliable Tech Solutions</span>
