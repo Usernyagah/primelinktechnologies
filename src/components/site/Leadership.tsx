@@ -1,15 +1,15 @@
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 const team = [
   {
     name: "Peter Njuguna",
     role: "Co-founder & CEO",
     bio: "Leads strategy, partnerships and customer success across Prime Link Technologies.",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
   },
   {
     name: "Dennis Nyagah",
     role: "Co-founder & CTO",
     bio: "Heads engineering, product and the technical infrastructure powering our solutions.",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400",
   },
 ];
 
@@ -26,8 +26,12 @@ export const Leadership = () => (
       <div className="mt-12 grid gap-6 lg:grid-cols-2 max-w-5xl">
         {team.map((m) => (
           <article key={m.name} className="card-hover rounded-xl border border-border bg-card overflow-hidden flex flex-col sm:flex-row items-stretch">
-            <div className="shrink-0 bg-muted/50 sm:w-48 h-48 sm:h-auto">
-              <img src={m.image} alt={m.name} className="h-full w-full object-cover" />
+            <div className="shrink-0 bg-muted/50 sm:w-48 h-48 sm:h-auto flex items-center justify-center">
+              <Avatar className="h-32 w-32 sm:h-40 sm:w-40">
+                <AvatarFallback className="text-2xl font-semibold bg-accent text-accent-foreground">
+                  {m.name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
             </div>
             <div className="flex-1 p-6 flex flex-col justify-center">
               <h3 className="text-xl font-semibold">{m.name}</h3>
