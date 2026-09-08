@@ -55,7 +55,7 @@ export const Navbar = ({ onSearch, query }: Props) => {
               {l.label}
             </button>
           ))}
-          <Link to="/admin/login" className="text-accent/80 hover:text-accent transition-colors font-medium">
+          <Link to="/admin/login" className="text-accent/80 hover:text-accent transition-colors font-medium hidden">
             Admin
           </Link>
         </nav>
@@ -131,7 +131,7 @@ export const Navbar = ({ onSearch, query }: Props) => {
           <Link
             to="/admin/login"
             onClick={() => setMobileOpen(false)}
-            className="rounded-md px-3 py-2 text-sm text-accent hover:bg-accent/10 transition-colors text-left w-full font-medium"
+            className="rounded-md px-3 py-2 text-sm text-accent hover:bg-accent/10 transition-colors text-left w-full font-medium hidden"
           >
             Admin Login
           </Link>
