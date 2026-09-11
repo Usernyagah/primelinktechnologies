@@ -14,7 +14,6 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export const AdminLayout = () => {
   const { logout } = useAuth();
-  // Force production redeploy - remove promo generator references
 
   return (
     <div className="min-h-screen bg-background">
