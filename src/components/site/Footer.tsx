@@ -26,8 +26,8 @@ export const Footer = () => (
             <div key={c.title}>
               <h4 className="text-sm font-semibold">{c.title}</h4>
               <ul className="mt-4 space-y-2.5">
-                {c.links.map((l) => (
-                  <li key={l}>
+                {c.links.map((l, index) => (
+                  <li key={`${c.title}-${index}`}>
                     <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{l}</a>
                   </li>
                 ))}
