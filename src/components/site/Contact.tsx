@@ -55,7 +55,7 @@ export const Contact = () => {
             Looking for a quote, bulk pricing or a tailored solution? Send us a message and we'll respond within one business day.
           </p>
           <ul className="mt-8 space-y-4 text-sm">
-            <li className="flex items-center gap-3"><Mail className="h-4 w-4 text-accent" /> sales@primelinktech.co</li>
+            <li className="flex items-center gap-3"><Mail className="h-4 w-4 text-accent" /> Primelinktechnologies6@gmail.com</li>
             <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" /> +254 703 617 164</li>
             <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" /> +254 742 628 137</li>
             <li className="flex items-center gap-3"><MapPin className="h-4 w-4 text-accent" /> Nairobi, Kenya</li>
