@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, Facebook, Instagram } from "lucide-react";
+import { FaTiktok } from "react-icons/fa";
+import { BsThreads } from "react-icons/bs";
 import { contactApi } from "@/lib/db";
 import { isFirebaseConfigured, getFirebaseSetupMessage } from "@/lib/firebase";
 
@@ -10,6 +12,29 @@ const schema = z.object({
   email: z.string().trim().email("Enter a valid email").max(255),
   message: z.string().trim().min(10, "Tell us a bit more").max(1000),
 });
+
+const SOCIAL_LINKS = [
+  {
+    name: "Facebook",
+    href: "https://facebook.com/PrimeLinkTechnologies",
+    icon: Facebook,
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/primelinktechnologies",
+    icon: Instagram,
+  },
+  {
+    name: "TikTok",
+    href: "https://www.tiktok.com/@primelinktechnologies",
+    icon: FaTiktok,
+  },
+  {
+    name: "Threads",
+    href: "https://www.threads.com/@primelinktechnologies",
+    icon: BsThreads,
+  },
+];
 
 export const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -60,6 +85,23 @@ export const Contact = () => {
             <li className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" /> +254 742 628 137</li>
             <li className="flex items-center gap-3"><MapPin className="h-4 w-4 text-accent" /> Nairobi, Kenya</li>
           </ul>
+          <div className="mt-6 flex gap-4">
+            {SOCIAL_LINKS.map((social) => {
+              const Icon = social.icon;
+              return (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.name}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              );
+            })}
+          </div>
         </div>
         <form onSubmit={submit} className="rounded-xl border border-border bg-card p-6 sm:p-8 flex flex-col gap-4" noValidate>
           <div>
