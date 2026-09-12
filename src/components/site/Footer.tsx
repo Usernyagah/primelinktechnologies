@@ -1,6 +1,30 @@
 import { FOOTER_LINKS } from "@/data/footer-links";
+import { Facebook, Instagram, MessageCircle } from "lucide-react";
 
 const cols = FOOTER_LINKS;
+
+const SOCIAL_LINKS = [
+  {
+    name: "Facebook",
+    href: "https://facebook.com/PrimeLinkTechnologies",
+    icon: Facebook,
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/primelinktechnologies",
+    icon: Instagram,
+  },
+  {
+    name: "TikTok",
+    href: "https://www.tiktok.com/@primelinktechnologies",
+    icon: MessageCircle,
+  },
+  {
+    name: "Threads",
+    href: "https://www.threads.com/@primelinktechnologies",
+    icon: MessageCircle,
+  },
+];
 
 export const Footer = () => (
   <footer id="about" className="border-t border-border/60 bg-surface">
@@ -19,6 +43,23 @@ export const Footer = () => (
             <p>+254 703 617 164</p>
             <p>+254 742 628 137</p>
             <p>Nairobi, Kenya</p>
+          </div>
+          <div className="mt-6 flex gap-4">
+            {SOCIAL_LINKS.map((social) => {
+              const Icon = social.icon;
+              return (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.name}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              );
+            })}
           </div>
         </div>
         <div className="lg:col-span-8 grid sm:grid-cols-2 md:grid-cols-4 gap-8">
