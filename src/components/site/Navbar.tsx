@@ -1,7 +1,7 @@
 import { Search, ShoppingCart, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const links = [
   { label: "Home", hash: "home" },
@@ -20,9 +20,18 @@ export const Navbar = ({ onSearch, query }: Props) => {
   const { count, setOpen } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const location = useLocation();
 
   const handleNavClick = (hash: string) => {
     setMobileOpen(false);
+    
+    // If we're not on the home page, navigate to home first
+    if (location.pathname !== "/") {
+      window.location.href = `/#${hash}`;
+      return;
+    }
+    
+    // If we're on the home page, scroll to the section
     const el = document.getElementById(hash);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -32,7 +41,7 @@ export const Navbar = ({ onSearch, query }: Props) => {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
       <div className="container-px flex h-16 items-center gap-6">
-        <Link to="/" className="flex items-center gap-2 shrink-0" onClick={() => handleNavClick("home")}>
+        <Link to="/" className="flex items-center gap-2 shrink-0">
           <img src="/logo.png" alt="Prime Link Logo" className="h-10 w-10 object-cover rounded-md" />
           <span className="hidden sm:flex flex-col leading-none">
             <span className="text-sm font-bold tracking-tight">Prime Link</span>
@@ -47,13 +56,13 @@ export const Navbar = ({ onSearch, query }: Props) => {
 
         <nav className="hidden lg:flex items-center gap-7 text-sm">
           {links.map((l) => (
-            <button
+            <Link
               key={l.hash}
-              onClick={() => handleNavClick(l.hash)}
-              className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none"
+              to={`/#${l.hash}`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               {l.label}
-            </button>
+            </Link>
           ))}
           <Link to="/admin/login" className="text-accent/80 hover:text-accent transition-colors font-medium hidden">
             Admin
@@ -120,13 +129,14 @@ export const Navbar = ({ onSearch, query }: Props) => {
       {mobileOpen && (
         <nav className="lg:hidden border-t border-border/60 px-5 py-4 flex flex-col gap-1">
           {links.map((l) => (
-            <button
+            <Link
               key={l.hash}
-              onClick={() => handleNavClick(l.hash)}
-              className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-left w-full bg-transparent border-none cursor-pointer"
+              to={`/#${l.hash}`}
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-left w-full"
             >
               {l.label}
-            </button>
+            </Link>
           ))}
           <Link
             to="/admin/login"
