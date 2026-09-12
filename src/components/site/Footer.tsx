@@ -1,5 +1,7 @@
 import { FOOTER_LINKS } from "@/data/footer-links";
-import { Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
+import { FaTiktok } from "react-icons/fa";
+import { BsThreads } from "react-icons/bs";
 
 const cols = FOOTER_LINKS;
 
@@ -17,12 +19,12 @@ const SOCIAL_LINKS = [
   {
     name: "TikTok",
     href: "https://www.tiktok.com/@primelinktechnologies",
-    icon: MessageCircle,
+    icon: FaTiktok,
   },
   {
     name: "Threads",
     href: "https://www.threads.com/@primelinktechnologies",
-    icon: MessageCircle,
+    icon: BsThreads,
   },
 ];
 
