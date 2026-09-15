@@ -1,14 +1,14 @@
 import { Search, ShoppingCart, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const links = [
-  { label: "Home", hash: "home" },
-  { label: "Products", hash: "products" },
-  { label: "Services", hash: "services" },
-  { label: "About", hash: "about" },
-  { label: "Contact", hash: "contact" },
+  { label: "Home", to: "/" },
+  { label: "Products", to: "/products" },
+  { label: "Services", to: "/services" },
+  { label: "About", to: "/about" },
+  { label: "Contact", to: "/contact" },
 ];
 
 interface Props {
@@ -20,23 +20,6 @@ export const Navbar = ({ onSearch, query }: Props) => {
   const { count, setOpen } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const location = useLocation();
-
-  const handleNavClick = (hash: string) => {
-    setMobileOpen(false);
-    
-    // If we're not on the home page, navigate to home first
-    if (location.pathname !== "/") {
-      window.location.href = `/#${hash}`;
-      return;
-    }
-    
-    // If we're on the home page, scroll to the section
-    const el = document.getElementById(hash);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
@@ -57,8 +40,8 @@ export const Navbar = ({ onSearch, query }: Props) => {
         <nav className="hidden lg:flex items-center gap-7 text-sm">
           {links.map((l) => (
             <Link
-              key={l.hash}
-              to={`/#${l.hash}`}
+              key={l.to}
+              to={l.to}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               {l.label}
@@ -130,8 +113,8 @@ export const Navbar = ({ onSearch, query }: Props) => {
         <nav className="lg:hidden border-t border-border/60 px-5 py-4 flex flex-col gap-1">
           {links.map((l) => (
             <Link
-              key={l.hash}
-              to={`/#${l.hash}`}
+              key={l.to}
+              to={l.to}
               onClick={() => setMobileOpen(false)}
               className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors text-left w-full"
             >

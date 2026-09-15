@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { PageSEO } from "@/components/PageSEO";
+import { SEO_PAGES } from "@/lib/seo/site-config";
 
 const Checkout = () => {
   const { items, total, clear, setOpen } = useCart();
@@ -68,6 +70,8 @@ const Checkout = () => {
 
   if (completed) {
     return (
+      <>
+        <PageSEO {...SEO_PAGES.checkout} />
       <div className="container-px py-16 max-w-lg mx-auto text-center space-y-6">
         <CheckCircle2 className="w-14 h-14 text-accent mx-auto" />
         <h1 className="text-2xl font-bold">Check your phone</h1>
@@ -79,10 +83,13 @@ const Checkout = () => {
           <Link to="/">Continue shopping</Link>
         </Button>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+      <PageSEO {...SEO_PAGES.checkout} />
     <div className="container-px py-10 lg:py-16">
       <Link
         to="/"
@@ -178,6 +185,7 @@ const Checkout = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

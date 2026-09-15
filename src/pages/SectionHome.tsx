@@ -1,4 +1,8 @@
 import { useOutletContext } from "react-router-dom";
+import { PageSEO } from "@/components/PageSEO";
+import { useHashScroll } from "@/hooks/useHashScroll";
+import { useScrollToSection } from "@/hooks/useScrollToSection";
+import type { PageMetadata } from "@/lib/seo/types";
 import { Hero } from "@/components/site/Hero";
 import { Deals } from "@/components/site/Deals";
 import { Testimonials } from "@/components/site/Testimonials";
@@ -9,30 +13,34 @@ import { Business } from "@/components/site/Business";
 import { Leadership } from "@/components/site/Leadership";
 import { Contact } from "@/components/site/Contact";
 
-export const Home = () => {
+interface SectionHomeProps {
+  section?: string;
+  metadata: PageMetadata;
+}
+
+export const SectionHome = ({ section, metadata }: SectionHomeProps) => {
   const { query } = useOutletContext<{ query: string }>();
+  useHashScroll();
+  useScrollToSection(section);
 
   return (
     <>
-      {/* Home */}
+      <PageSEO {...metadata} />
       <section id="home">
         <Hero />
         <Deals />
       </section>
 
-      {/* Products */}
       <section id="products">
         <Categories />
         <Shop query={query} />
       </section>
 
-      {/* Services */}
       <section id="services">
         <ServicesList />
         <Business />
       </section>
 
-      {/* About */}
       <section id="about">
         <div className="py-20 bg-background">
           <div className="container-px">
@@ -51,10 +59,8 @@ export const Home = () => {
         <Leadership />
       </section>
 
-      {/* Testimonials — just above the footer */}
       <Testimonials />
 
-      {/* Contact */}
       <section id="contact">
         <Contact />
       </section>
@@ -62,4 +68,4 @@ export const Home = () => {
   );
 };
 
-export default Home;
+export default SectionHome;
