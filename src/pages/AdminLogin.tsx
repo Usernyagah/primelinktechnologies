@@ -7,6 +7,8 @@ import { Lock, Mail, Key } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, isFirebaseConfigured, getFirebaseSetupMessage } from '@/lib/firebase';
 import { toast } from 'sonner';
+import { PageSEO } from '@/components/PageSEO';
+import { SEO_PAGES } from '@/lib/seo/site-config';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -44,6 +46,8 @@ const AdminLogin = () => {
   if (isLoading) return null;
 
   return (
+    <>
+      <PageSEO {...SEO_PAGES.adminLogin} />
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-2xl border border-border shadow-xl">
         <div className="text-center">
@@ -93,6 +97,7 @@ const AdminLogin = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

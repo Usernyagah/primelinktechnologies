@@ -8,6 +8,8 @@ import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronLeft, ChevronRight, Plus, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageSEO } from "@/components/PageSEO";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/site-config";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,34 +24,62 @@ const ProductDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="container-px py-20 flex justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-accent" />
-      </div>
+      <>
+        <PageSEO
+          title="Loading product… | Prime Link Technologies"
+          description="View product details at Prime Link Technologies Kenya."
+          path={`/product/${id}`}
+          noindex
+        />
+        <div className="container-px py-20 flex justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-accent" />
+        </div>
+      </>
     );
   }
 
   if (isError || !product) {
     return (
-      <div className="container-px py-20 text-center space-y-4">
+      <>
+        <PageSEO
+          title="Product Not Found | Prime Link Technologies"
+          description="This product could not be found. Browse our shop for laptops, phones and tablets."
+          path={`/product/${id}`}
+          noindex
+        />
+        <div className="container-px py-20 text-center space-y-4">
         <h1 className="text-2xl font-bold">Product not found</h1>
         <p className="text-muted-foreground">This item may have been removed or the link is incorrect.</p>
         <Button asChild variant="outline">
-          <Link to="/#shop">
+          <Link to="/products">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to shop
           </Link>
         </Button>
       </div>
+      </>
     );
   }
 
   const images = getProductImages(product);
   const hasGallery = images.length > 1;
+  const primaryImage = images[0];
+  const ogImage =
+    primaryImage.startsWith("http") ? primaryImage : DEFAULT_OG_IMAGE;
+  const productTitle = `${product.name} | Prime Link Technologies Kenya`;
+  const productDescription = `${product.name} — ${product.specs}. ${formatKES(product.price)}. Buy from Prime Link Technologies with warranty and business support.`;
 
   return (
+    <>
+      <PageSEO
+        title={productTitle}
+        description={productDescription}
+        path={`/product/${product.id}`}
+        ogImage={ogImage}
+      />
     <div className="container-px py-10 lg:py-16">
       <Link
-        to="/#shop"
+        to="/products"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -140,7 +170,7 @@ const ProductDetail = () => {
               Add to cart
             </Button>
             <Button size="lg" variant="outline" asChild className="flex-1">
-              <Link to="/#contact">Request a quote</Link>
+              <Link to="/contact">Request a quote</Link>
             </Button>
           </div>
 
@@ -151,6 +181,7 @@ const ProductDetail = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

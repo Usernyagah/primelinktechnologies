@@ -5,6 +5,8 @@ import { Mail, Trash2, Inbox } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import type { Timestamp } from 'firebase/firestore';
+import { PageSEO } from '@/components/PageSEO';
+import { SEO_PAGES } from '@/lib/seo/site-config';
 
 function formatSubmittedAt(createdAt?: Timestamp | null) {
   if (!createdAt?.toDate) return '—';
@@ -29,6 +31,8 @@ const AdminMessages = () => {
   });
 
   return (
+    <>
+      <PageSEO {...SEO_PAGES.adminMessages} />
     <main className="container-px py-10">
       <div className="space-y-8">
         <div className="flex items-center gap-2 px-4 py-2 bg-secondary/40 border border-border rounded-md text-sm font-medium w-fit">
@@ -105,6 +109,7 @@ const AdminMessages = () => {
         )}
       </div>
     </main>
+    </>
   );
 };
 

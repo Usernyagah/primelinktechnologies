@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dialog';
 import { ProductForm } from '@/components/admin/ProductForm';
 import { toast } from 'sonner';
+import { PageSEO } from '@/components/PageSEO';
+import { SEO_PAGES } from '@/lib/seo/site-config';
 
 const AdminDashboard = () => {
   const queryClient = useQueryClient();
@@ -65,6 +67,8 @@ const AdminDashboard = () => {
   };
 
   return (
+    <>
+      <PageSEO {...SEO_PAGES.adminDashboard} />
     <main className="container-px py-10">
       <div className="space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -159,6 +163,7 @@ const AdminDashboard = () => {
         </div>
       </div>
     </main>
+    </>
   );
 };
 
