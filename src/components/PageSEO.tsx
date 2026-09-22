@@ -24,6 +24,9 @@ export const PageSEO = ({
       <meta name="description" content={description} />
       <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
 
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:type" content="website" />
@@ -31,6 +34,9 @@ export const PageSEO = ({
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={resolvedOgImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={`${SITE_NAME} Logo`} />
       <meta property="og:locale" content="en_KE" />
 
       <meta name="twitter:card" content="summary_large_image" />
@@ -38,6 +44,7 @@ export const PageSEO = ({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={resolvedOgImage} />
+      <meta name="twitter:image:alt" content={`${SITE_NAME} Logo`} />
     </Helmet>
   );
 };
