@@ -10,7 +10,6 @@ import { Categories } from "@/components/site/Categories";
 import { Shop } from "@/components/site/Shop";
 import { ServicesList } from "@/components/site/ServicesList";
 import { Business } from "@/components/site/Business";
-import { Leadership } from "@/components/site/Leadership";
 import { Contact } from "@/components/site/Contact";
 
 interface SectionHomeProps {
@@ -56,7 +55,6 @@ export const SectionHome = ({ section, metadata }: SectionHomeProps) => {
             </div>
           </div>
         </div>
-        <Leadership />
       </section>
 
       <Testimonials />
