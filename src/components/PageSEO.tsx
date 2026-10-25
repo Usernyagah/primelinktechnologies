@@ -24,9 +24,9 @@ export const PageSEO = ({
       <meta name="description" content={description} />
       <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-      <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:type" content="website" />
