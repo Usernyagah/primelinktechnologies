@@ -14,6 +14,8 @@ import {
   limit,
   increment,
   Timestamp,
+  onSnapshot,
+  type Unsubscribe,
   type Firestore,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured, getFirebaseSetupMessage } from "./firebase";
@@ -169,24 +171,33 @@ export const pageViewsApi = {
     });
   },
 
-  listSince: async (start: Date): Promise<PageView[]> => {
+  subscribeSince: (
+    start: Date,
+    onViews: (views: PageView[]) => void,
+    onError: (error: Error) => void
+  ): Unsubscribe => {
     const q = query(
       collection(requireDb(), "pageViews"),
       where("createdAt", ">=", Timestamp.fromDate(start)),
       orderBy("createdAt", "desc"),
     );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => {
-      const data = d.data();
-      return {
-        id: d.id,
-        path: data.path as string,
-        createdAt: data.createdAt as Timestamp | null,
-        visitorId: data.visitorId as string | undefined,
-        sessionId: data.sessionId as string | undefined,
-        durationSeconds: data.durationSeconds as number | undefined,
-      };
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        onViews(snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            id: d.id,
+            path: data.path as string,
+            createdAt: data.createdAt as Timestamp | null,
+            visitorId: data.visitorId as string | undefined,
+            sessionId: data.sessionId as string | undefined,
+            durationSeconds: data.durationSeconds as number | undefined,
+          };
+        }));
+      },
+      onError
+    );
   },
 
   touchSession: async (
@@ -204,22 +215,31 @@ export const pageViewsApi = {
       }, { merge: true });
   },
 
-  listActiveSessions: async (since: Date): Promise<AnalyticsSession[]> => {
+  subscribeActiveSessions: (
+    since: Date,
+    onSessions: (sessions: AnalyticsSession[]) => void,
+    onError: (error: Error) => void
+  ): Unsubscribe => {
     const q = query(
       collection(requireDb(), "analyticsSessions"),
       where("lastSeenAt", ">=", Timestamp.fromDate(since)),
       limit(1000)
     );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => {
-      const data = d.data();
-      return {
-        id: d.id,
-        visitorId: data.visitorId as string,
-        startedAt: data.startedAt as Timestamp,
-        lastSeenAt: data.lastSeenAt as Timestamp,
-        pageViews: data.pageViews as number,
-      };
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        onSessions(snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            id: d.id,
+            visitorId: data.visitorId as string,
+            startedAt: data.startedAt as Timestamp,
+            lastSeenAt: data.lastSeenAt as Timestamp,
+            pageViews: data.pageViews as number,
+          };
+        }));
+      },
+      onError
+    );
   },
 };

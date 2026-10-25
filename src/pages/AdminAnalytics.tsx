@@ -1,5 +1,4 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   CalendarDays,
@@ -21,7 +20,11 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageSEO } from "@/components/PageSEO";
 import { SEO_PAGES } from "@/lib/seo/site-config";
-import { pageViewsApi } from "@/lib/db";
+import {
+  pageViewsApi,
+  type AnalyticsSession,
+  type PageView,
+} from "@/lib/db";
 import {
   buildPagePerformance,
   buildTrafficBuckets,
@@ -42,32 +45,77 @@ function formatDuration(totalSeconds: number) {
   return `${minutes}m ${seconds}s`;
 }
 
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error("Analytics data could not be loaded");
+}
+
 const AdminAnalytics = () => {
   const [range, setRange] = useState<AnalyticsRange>("7d");
+  const [views, setViews] = useState<PageView[]>([]);
+  const [activeSessions, setActiveSessions] = useState<AnalyticsSession[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingActiveSessions, setIsLoadingActiveSessions] = useState(true);
+  const [viewsError, setViewsError] = useState<Error | null>(null);
+  const [activeSessionsError, setActiveSessionsError] = useState<Error | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
-  const {
-    data: views = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["pageViews", range],
-    queryFn: () => pageViewsApi.listSince(getAnalyticsRangeStart(range)),
-  });
-  const {
-    data: activeSessions = [],
-    isLoading: isLoadingActiveSessions,
-    isError: isActiveSessionsError,
-    error: activeSessionsError,
-  } = useQuery({
-    queryKey: ["activeAnalyticsSessions"],
-    queryFn: () => pageViewsApi.listActiveSessions(new Date(Date.now() - 5 * 60 * 1000)),
-    refetchInterval: 60_000,
-  });
+  useEffect(() => {
+    setIsLoading(true);
+    setViewsError(null);
+
+    try {
+      return pageViewsApi.subscribeSince(
+        getAnalyticsRangeStart(range),
+        (nextViews) => {
+          setViews(nextViews);
+          setIsLoading(false);
+        },
+        (error) => {
+          setViewsError(error);
+          setIsLoading(false);
+        }
+      );
+    } catch (error) {
+      setViewsError(toError(error));
+      setIsLoading(false);
+      return undefined;
+    }
+  }, [range]);
+
+  useEffect(() => {
+    setIsLoadingActiveSessions(true);
+    setActiveSessionsError(null);
+
+    try {
+      return pageViewsApi.subscribeActiveSessions(
+        new Date(Date.now() - 5 * 60 * 1000),
+        (nextSessions) => {
+          setActiveSessions(nextSessions);
+          setIsLoadingActiveSessions(false);
+        },
+        (error) => {
+          setActiveSessionsError(error);
+          setIsLoadingActiveSessions(false);
+        }
+      );
+    } catch (error) {
+      setActiveSessionsError(toError(error));
+      setIsLoadingActiveSessions(false);
+      return undefined;
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 15_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const visitorMetrics = useMemo(() => buildVisitorMetrics(views), [views]);
   const traffic = useMemo(() => buildTrafficBuckets(views, range), [views, range]);
   const pagePerformance = useMemo(() => buildPagePerformance(views), [views]);
+  const activeVisitors = activeSessions.filter(
+    (session) => session.lastSeenAt.toMillis() >= now - 5 * 60 * 1000
+  ).length;
   const highestPageCount = pagePerformance[0]?.views ?? 1;
 
   return (
@@ -106,9 +154,9 @@ const AdminAnalytics = () => {
             </div>
           </header>
 
-          {isError ? (
+          {viewsError ? (
             <p className="rounded-xl border border-red-200 bg-white p-6 text-center text-red-600">
-              {(error as Error).message || "Failed to load analytics"}
+              {viewsError.message || "Failed to load analytics"}
             </p>
           ) : (
             <>
@@ -119,13 +167,13 @@ const AdminAnalytics = () => {
                 <MetricCard
                   label="Active Now"
                   value={
-                    isLoadingActiveSessions || isActiveSessionsError
+                    isLoadingActiveSessions || !!activeSessionsError
                       ? "—"
-                      : activeSessions.length.toLocaleString()
+                      : activeVisitors.toLocaleString()
                   }
                   description={
-                    isActiveSessionsError
-                      ? (activeSessionsError as Error).message || "Unable to load active sessions"
+                    activeSessionsError
+                      ? activeSessionsError.message || "Unable to load active sessions"
                       : "Seen in the last 5 minutes"
                   }
                   icon={<Activity className="h-5 w-5" />}
