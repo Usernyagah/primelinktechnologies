@@ -1,12 +1,12 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ExternalLink, LogOut, Mail, Package } from 'lucide-react';
+import { BarChart3, ChevronLeft, ExternalLink, LogOut, Mail, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    'inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+    'inline-flex shrink-0 items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
     isActive
       ? 'bg-accent text-accent-foreground'
       : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
@@ -38,7 +38,7 @@ export const AdminLayout = () => {
             </Button>
           </div>
         </div>
-        <nav className="container-px pb-3 flex gap-2">
+        <nav className="container-px pb-3 flex gap-2 overflow-x-auto">
           <NavLink to="/admin" end className={navLinkClass}>
             <Package className="w-4 h-4" />
             Products
@@ -46,6 +46,10 @@ export const AdminLayout = () => {
           <NavLink to="/admin/messages" className={navLinkClass}>
             <Mail className="w-4 h-4" />
             Contact messages
+          </NavLink>
+          <NavLink to="/admin/analytics" className={navLinkClass}>
+            <BarChart3 className="w-4 h-4" />
+            Analytics
           </NavLink>
         </nav>
       </header>

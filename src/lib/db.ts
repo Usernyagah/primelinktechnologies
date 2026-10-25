@@ -11,6 +11,7 @@ import {
   setDoc,
   serverTimestamp,
   orderBy,
+  limit,
   type Firestore,
   type Timestamp,
 } from "firebase/firestore";
@@ -29,6 +30,12 @@ export interface ContactMessage {
 export interface ContactSubmission extends ContactMessage {
   id: string;
   createdAt?: Timestamp | null;
+}
+
+export interface PageView {
+  id: string;
+  path: string;
+  createdAt: Timestamp | null;
 }
 
 function filterSeedProducts(category?: string): Product[] {
@@ -130,5 +137,31 @@ export const contactApi = {
 
   delete: async (id: string) => {
     await deleteDoc(doc(requireDb(), "contactMessages", id));
+  },
+};
+
+export const pageViewsApi = {
+  track: async (path: string) => {
+    await addDoc(collection(requireDb(), "pageViews"), {
+      path,
+      createdAt: serverTimestamp(),
+    });
+  },
+
+  listRecent: async (): Promise<PageView[]> => {
+    const q = query(
+      collection(requireDb(), "pageViews"),
+      orderBy("createdAt", "desc"),
+      limit(200)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        path: data.path as string,
+        createdAt: data.createdAt as Timestamp | null,
+      };
+    });
   },
 };

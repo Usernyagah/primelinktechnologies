@@ -64,6 +64,12 @@ export const SEO_PAGES = {
     path: "/admin/messages",
     noindex: true,
   },
+  adminAnalytics: {
+    title: "Site Analytics | Prime Link Technologies",
+    description: "Recent page visits for Prime Link Technologies.",
+    path: "/admin/analytics",
+    noindex: true,
+  },
 } as const;
 
 export type SeoPageKey = keyof typeof SEO_PAGES;

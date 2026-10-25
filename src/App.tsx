@@ -14,6 +14,7 @@ import Checkout from "./pages/Checkout.tsx";
 import AdminLogin from "./pages/AdminLogin.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import AdminMessages from "./pages/AdminMessages.tsx";
+import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import NotFound from "./pages/NotFound.tsx";
 import { SEO_PAGES } from "@/lib/seo/site-config";
@@ -57,6 +58,7 @@ const App = () => (
                   <Route element={<AdminLayout />}>
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/messages" element={<AdminMessages />} />
+                    <Route path="/admin/analytics" element={<AdminAnalytics />} />
                   </Route>
                 </Route>
 

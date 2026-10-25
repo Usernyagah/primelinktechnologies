@@ -1,13 +1,21 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "./site/Navbar";
 import { Footer } from "./site/Footer";
 import { CartDrawer } from "./site/CartDrawer";
+import { pageViewsApi } from "@/lib/db";
 
 const WHATSAPP_NUMBER = "254703617164";
 
 export const Layout = () => {
   const [query, setQuery] = useState("");
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    void pageViewsApi.track(pathname).catch((error: unknown) => {
+      console.error("Failed to record page view:", error);
+    });
+  }, [pathname]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">

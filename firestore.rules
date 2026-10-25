@@ -38,5 +38,16 @@ service cloud.firestore {
         && request.resource.data.message.size() <= 1000;
       allow read, update, delete: if request.auth != null;
     }
+
+    match /pageViews/{pageViewId} {
+      allow create: if request.resource.data.keys().hasAll(['path', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['path', 'createdAt'])
+        && request.resource.data.path is string
+        && request.resource.data.path.size() <= 200
+        && request.resource.data.path.matches('^/[^?#]*$')
+        && !request.resource.data.path.matches('^/admin(/.*)?$')
+        && request.resource.data.createdAt is timestamp;
+      allow read: if request.auth != null;
+    }
   }
 }
