@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -14,10 +15,11 @@ import Checkout from "./pages/Checkout.tsx";
 import AdminLogin from "./pages/AdminLogin.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import AdminMessages from "./pages/AdminMessages.tsx";
-import AdminAnalytics from "./pages/AdminAnalytics.tsx";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import NotFound from "./pages/NotFound.tsx";
 import { SEO_PAGES } from "@/lib/seo/site-config";
+
+const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -58,7 +60,20 @@ const App = () => (
                   <Route element={<AdminLayout />}>
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/messages" element={<AdminMessages />} />
-                    <Route path="/admin/analytics" element={<AdminAnalytics />} />
+                    <Route
+                      path="/admin/analytics"
+                      element={
+                        <Suspense
+                          fallback={
+                            <p className="p-10 text-center text-muted-foreground">
+                              Loading analytics...
+                            </p>
+                          }
+                        >
+                          <AdminAnalytics />
+                        </Suspense>
+                      }
+                    />
                   </Route>
                 </Route>
 

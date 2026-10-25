@@ -12,8 +12,9 @@ import {
   serverTimestamp,
   orderBy,
   limit,
+  increment,
+  Timestamp,
   type Firestore,
-  type Timestamp,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured, getFirebaseSetupMessage } from "./firebase";
 import { products as seedProducts, type Product } from "@/data/products";
@@ -36,6 +37,17 @@ export interface PageView {
   id: string;
   path: string;
   createdAt: Timestamp | null;
+  visitorId?: string;
+  sessionId?: string;
+  durationSeconds?: number;
+}
+
+export interface AnalyticsSession {
+  id: string;
+  visitorId: string;
+  startedAt: Timestamp;
+  lastSeenAt: Timestamp;
+  pageViews: number;
 }
 
 function filterSeedProducts(category?: string): Product[] {
@@ -141,18 +153,27 @@ export const contactApi = {
 };
 
 export const pageViewsApi = {
-  track: async (path: string) => {
-    await addDoc(collection(requireDb(), "pageViews"), {
+  track: async (path: string, visitorId: string, sessionId: string): Promise<string> => {
+    const view = await addDoc(collection(requireDb(), "pageViews"), {
       path,
       createdAt: serverTimestamp(),
+      visitorId,
+      sessionId,
+    });
+    return view.id;
+  },
+
+  updateDuration: async (id: string, durationSeconds: number) => {
+    await updateDoc(doc(requireDb(), "pageViews", id), {
+      durationSeconds: Math.min(1800, Math.max(0, durationSeconds)),
     });
   },
 
-  listRecent: async (): Promise<PageView[]> => {
+  listSince: async (start: Date): Promise<PageView[]> => {
     const q = query(
       collection(requireDb(), "pageViews"),
+      where("createdAt", ">=", Timestamp.fromDate(start)),
       orderBy("createdAt", "desc"),
-      limit(200)
     );
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => {
@@ -161,6 +182,43 @@ export const pageViewsApi = {
         id: d.id,
         path: data.path as string,
         createdAt: data.createdAt as Timestamp | null,
+        visitorId: data.visitorId as string | undefined,
+        sessionId: data.sessionId as string | undefined,
+        durationSeconds: data.durationSeconds as number | undefined,
+      };
+    });
+  },
+
+  touchSession: async (
+    visitorId: string,
+    sessionId: string,
+    startedAt: Date,
+    countPageView = false
+  ) => {
+    const sessionRef = doc(requireDb(), "analyticsSessions", sessionId);
+    await setDoc(sessionRef, {
+      visitorId,
+      startedAt: Timestamp.fromDate(startedAt),
+      lastSeenAt: serverTimestamp(),
+      pageViews: increment(countPageView ? 1 : 0),
+      }, { merge: true });
+  },
+
+  listActiveSessions: async (since: Date): Promise<AnalyticsSession[]> => {
+    const q = query(
+      collection(requireDb(), "analyticsSessions"),
+      where("lastSeenAt", ">=", Timestamp.fromDate(since)),
+      limit(1000)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        visitorId: data.visitorId as string,
+        startedAt: data.startedAt as Timestamp,
+        lastSeenAt: data.lastSeenAt as Timestamp,
+        pageViews: data.pageViews as number,
       };
     });
   },

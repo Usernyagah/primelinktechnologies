@@ -1,21 +1,87 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "./site/Navbar";
 import { Footer } from "./site/Footer";
 import { CartDrawer } from "./site/CartDrawer";
 import { pageViewsApi } from "@/lib/db";
+import { createAnalyticsIdentity } from "@/lib/analytics";
 
 const WHATSAPP_NUMBER = "254703617164";
 
 export const Layout = () => {
   const [query, setQuery] = useState("");
   const { pathname } = useLocation();
+  const analyticsIdentity = useMemo(createAnalyticsIdentity, []);
 
   useEffect(() => {
-    void pageViewsApi.track(pathname).catch((error: unknown) => {
-      console.error("Failed to record page view:", error);
-    });
-  }, [pathname]);
+    const updateSession = (countPageView = false) =>
+      pageViewsApi
+        .touchSession(
+          analyticsIdentity.visitorId,
+          analyticsIdentity.sessionId,
+          analyticsIdentity.startedAt,
+          countPageView
+        )
+        .catch((error: unknown) => {
+          console.error("Failed to update analytics session:", error);
+        });
+
+    void updateSession();
+    const heartbeat = window.setInterval(() => {
+      if (document.visibilityState === "visible") void updateSession();
+    }, 60_000);
+    return () => window.clearInterval(heartbeat);
+  }, [analyticsIdentity]);
+
+  useEffect(() => {
+    let viewId: string | undefined;
+    let isComplete = false;
+    const startedAt = Date.now();
+
+    const saveDuration = () => {
+      if (isComplete) return;
+      isComplete = true;
+
+      if (viewId) {
+        void pageViewsApi
+          .updateDuration(viewId, Math.floor((Date.now() - startedAt) / 1000))
+          .catch((error: unknown) => {
+            console.error("Failed to save page visit duration:", error);
+          });
+      }
+    };
+
+    void pageViewsApi
+      .track(pathname, analyticsIdentity.visitorId, analyticsIdentity.sessionId)
+      .then((id) => {
+        viewId = id;
+        if (isComplete) {
+          return pageViewsApi.updateDuration(
+            id,
+            Math.floor((Date.now() - startedAt) / 1000)
+          );
+        }
+      })
+      .catch((error: unknown) => {
+        console.error("Failed to record page view:", error);
+      });
+    void pageViewsApi
+      .touchSession(
+        analyticsIdentity.visitorId,
+        analyticsIdentity.sessionId,
+        analyticsIdentity.startedAt,
+        true
+      )
+      .catch((error: unknown) => {
+        console.error("Failed to update analytics session:", error);
+      });
+
+    window.addEventListener("pagehide", saveDuration);
+    return () => {
+      window.removeEventListener("pagehide", saveDuration);
+      saveDuration();
+    };
+  }, [pathname, analyticsIdentity]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
