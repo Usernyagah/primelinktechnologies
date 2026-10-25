@@ -9,12 +9,13 @@ import {
   query,
   where,
   setDoc,
+  increment,
   serverTimestamp,
   orderBy,
   limit,
-  increment,
   Timestamp,
   onSnapshot,
+  writeBatch,
   type Unsubscribe,
   type Firestore,
 } from "firebase/firestore";
@@ -155,18 +156,55 @@ export const contactApi = {
 };
 
 export const pageViewsApi = {
-  track: async (path: string, visitorId: string, sessionId: string): Promise<string> => {
-    const view = await addDoc(collection(requireDb(), "pageViews"), {
+  track: async (
+    path: string,
+    visitorId: string,
+    sessionId: string,
+    sessionStartedAt: number
+  ): Promise<string> => {
+    const firestore = requireDb();
+    const batch = writeBatch(firestore);
+    const viewRef = doc(collection(firestore, "pageViews"));
+    batch.set(viewRef, {
       path,
       createdAt: serverTimestamp(),
       visitorId,
       sessionId,
     });
-    return view.id;
+    batch.set(
+      doc(firestore, "analyticsSessions", sessionId),
+      {
+        visitorId,
+        startedAt: Timestamp.fromDate(new Date(sessionStartedAt)),
+        lastSeenAt: serverTimestamp(),
+        pageViews: increment(1),
+      },
+      { merge: true }
+    );
+    await batch.commit();
+    return viewRef.id;
   },
 
-  updateDuration: async (id: string, durationSeconds: number) => {
-    await updateDoc(doc(requireDb(), "pageViews", id), {
+  heartbeat: async (
+    visitorId: string,
+    sessionId: string,
+    sessionStartedAt: number
+  ) => {
+    const firestore = requireDb();
+    await setDoc(
+      doc(firestore, "analyticsSessions", sessionId),
+      {
+        visitorId,
+        startedAt: Timestamp.fromDate(new Date(sessionStartedAt)),
+        lastSeenAt: serverTimestamp(),
+        pageViews: increment(0),
+      },
+      { merge: true }
+    );
+  },
+
+  updateDuration: async (viewId: string, durationSeconds: number) => {
+    await updateDoc(doc(requireDb(), "pageViews", viewId), {
       durationSeconds: Math.min(1800, Math.max(0, durationSeconds)),
     });
   },
@@ -198,21 +236,6 @@ export const pageViewsApi = {
       },
       onError
     );
-  },
-
-  touchSession: async (
-    visitorId: string,
-    sessionId: string,
-    startedAt: Date,
-    countPageView = false
-  ) => {
-    const sessionRef = doc(requireDb(), "analyticsSessions", sessionId);
-    await setDoc(sessionRef, {
-      visitorId,
-      startedAt: Timestamp.fromDate(startedAt),
-      lastSeenAt: serverTimestamp(),
-      pageViews: increment(countPageView ? 1 : 0),
-      }, { merge: true });
   },
 
   subscribeActiveSessions: (

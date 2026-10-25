@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { getAdminFirestore } from "../lib/firebase-admin";
 
 /** Safaricom STK callback — updates order when Firebase Admin is configured. */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -24,16 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (checkoutRequestId && process.env.FIREBASE_SERVICE_ACCOUNT) {
       try {
-        const { initializeApp, cert, getApps } = await import("firebase-admin/app");
-        const { getFirestore } = await import("firebase-admin/firestore");
-
-        if (getApps().length === 0) {
-          const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-          initializeApp({ credential: cert(serviceAccount) });
-        }
-
-        const db = getFirestore();
-        const snap = await db
+        const snap = await getAdminFirestore()
           .collection("orders")
           .where("checkoutRequestId", "==", checkoutRequestId)
           .limit(1)

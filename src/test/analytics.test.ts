@@ -23,7 +23,7 @@ function makeView(
 }
 
 describe("analytics calculations", () => {
-  it("counts unique visitors, average session duration, and single-page sessions", () => {
+  it("counts unique browsers rather than page clicks, session duration, and single-page sessions", () => {
     const views = [
       makeView("view-1", "/", new Date(), {
         visitorId: "visitor-1",

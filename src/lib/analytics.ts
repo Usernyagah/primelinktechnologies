@@ -14,21 +14,29 @@ export function createAnalyticsIdentity() {
 
   try {
     const visitorId = window.localStorage.getItem("analytics-visitor-id") ?? createId();
-    const sessionId = window.sessionStorage.getItem("analytics-session-id") ?? createId();
-    const storedStartedAt = window.sessionStorage.getItem("analytics-session-started-at");
-    const startedAt = storedStartedAt ? Number(storedStartedAt) : Date.now();
+    let sessionId = window.sessionStorage.getItem("analytics-session-id");
+    let sessionStartedAt = Number(
+      window.sessionStorage.getItem("analytics-session-started-at")
+    );
+    if (!sessionId || !Number.isFinite(sessionStartedAt) || sessionStartedAt <= 0) {
+      sessionId = createId();
+      sessionStartedAt = Date.now();
+    }
 
     window.localStorage.setItem("analytics-visitor-id", visitorId);
     window.sessionStorage.setItem("analytics-session-id", sessionId);
-    window.sessionStorage.setItem("analytics-session-started-at", String(startedAt));
+    window.sessionStorage.setItem(
+      "analytics-session-started-at",
+      String(sessionStartedAt)
+    );
 
-    return { visitorId, sessionId, startedAt: new Date(startedAt) };
+    return { visitorId, sessionId, sessionStartedAt };
   } catch (error) {
     console.warn("Analytics storage is unavailable; using a temporary visitor ID.", error);
     return {
       visitorId: createId(),
       sessionId: createId(),
-      startedAt: new Date(),
+      sessionStartedAt: Date.now(),
     };
   }
 }
@@ -84,11 +92,11 @@ export function buildPagePerformance(views: PageView[]) {
 }
 
 export function buildVisitorMetrics(views: PageView[]) {
-  const visitorIds = new Set<string>();
+  const visitors = new Set<string>();
   const sessions = new Map<string, { views: number; durationSeconds: number }>();
 
   for (const view of views) {
-    if (view.visitorId) visitorIds.add(view.visitorId);
+    if (view.visitorId) visitors.add(view.visitorId);
     if (!view.sessionId) continue;
 
     const session = sessions.get(view.sessionId) ?? { views: 0, durationSeconds: 0 };
@@ -107,10 +115,10 @@ export function buildVisitorMetrics(views: PageView[]) {
   );
 
   return {
-    uniqueVisitors: visitorIds.size,
+    uniqueVisitors: visitors.size,
     averageSessionSeconds: sessionCount ? Math.round(totalDuration / sessionCount) : 0,
     bounceRate: sessionCount ? Math.round((bouncedSessions / sessionCount) * 100) : 0,
-    hasVisitorData: visitorIds.size > 0,
+    hasVisitorData: visitors.size > 0,
     hasSessionData: sessionCount > 0,
     hasDurationData: views.some(
       (view) => view.sessionId && typeof view.durationSeconds === "number"

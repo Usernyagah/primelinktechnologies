@@ -113,27 +113,30 @@ const AdminAnalytics = () => {
   const visitorMetrics = useMemo(() => buildVisitorMetrics(views), [views]);
   const traffic = useMemo(() => buildTrafficBuckets(views, range), [views, range]);
   const pagePerformance = useMemo(() => buildPagePerformance(views), [views]);
-  const activeVisitors = activeSessions.filter(
-    (session) => session.lastSeenAt.toMillis() >= now - 5 * 60 * 1000
-  ).length;
+  const activeVisitors = new Set(
+    activeSessions
+      .filter((session) => session.lastSeenAt.toMillis() >= now - 5 * 60 * 1000)
+      .map((session) => session.visitorId)
+      .filter(Boolean)
+  ).size;
   const highestPageCount = pagePerformance[0]?.views ?? 1;
 
   return (
     <>
       <PageSEO {...SEO_PAGES.adminAnalytics} />
-      <main className="min-h-[calc(100vh-7rem)] bg-slate-50 px-4 py-8 text-slate-950 sm:px-6 lg:px-8">
+      <main className="min-h-[calc(100vh-7rem)] bg-[#071425] px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-7">
           <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h2>
-              <p className="mt-1 text-slate-500">
+              <p className="mt-1 text-slate-400">
                 Monitor website traffic and visitor behavior
               </p>
             </div>
             <div
               role="group"
               aria-label="Analytics time range"
-              className="inline-flex w-fit rounded-xl bg-slate-200/70 p-1"
+              className="inline-flex w-fit rounded-xl border border-[#17365a] bg-[#0b1d33] p-1"
             >
               {RANGE_OPTIONS.map((option) => (
                 <button
@@ -144,8 +147,8 @@ const AdminAnalytics = () => {
                   className={cn(
                     "rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:px-4",
                     range === option.value
-                      ? "bg-white text-slate-950 shadow-sm"
-                      : "text-slate-500 hover:text-slate-900"
+                      ? "bg-[#007BFF] text-white shadow-sm"
+                      : "text-slate-400 hover:text-white"
                   )}
                 >
                   {option.label}
@@ -155,7 +158,7 @@ const AdminAnalytics = () => {
           </header>
 
           {viewsError ? (
-            <p className="rounded-xl border border-red-200 bg-white p-6 text-center text-red-600">
+            <p className="rounded-xl border border-red-900/60 bg-[#0b1d33] p-6 text-center text-red-300">
               {viewsError.message || "Failed to load analytics"}
             </p>
           ) : (
@@ -174,7 +177,7 @@ const AdminAnalytics = () => {
                   description={
                     activeSessionsError
                       ? activeSessionsError.message || "Unable to load active sessions"
-                      : "Seen in the last 5 minutes"
+                      : "Distinct browsers active in the last 5 minutes"
                   }
                   icon={<Activity className="h-5 w-5" />}
                   highlighted
@@ -194,7 +197,7 @@ const AdminAnalytics = () => {
                         ? "—"
                         : visitorMetrics.uniqueVisitors.toLocaleString()
                   }
-                  description="Anonymous browsers, tracked going forward"
+                  description="Distinct browser/device IDs"
                   icon={<Users className="h-5 w-5" />}
                 />
                 <MetricCard
@@ -223,43 +226,48 @@ const AdminAnalytics = () => {
                 />
               </section>
 
-              <Card className="border-slate-200 bg-white text-slate-950 shadow-sm">
+              <p className="text-xs text-slate-400">
+                Visitors are identified by a random browser ID stored in local storage. Different
+                browsers or devices count separately; clearing browser storage may create a new ID.
+              </p>
+
+              <Card className="border-[#17365a] bg-[#0b1d33] text-slate-100 shadow-lg shadow-black/20">
                 <CardHeader>
                   <CardTitle className="text-xl">Traffic Overview</CardTitle>
-                  <CardDescription className="text-slate-500">
+                  <CardDescription className="text-slate-400">
                     Visitors and page views over time
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
+                  <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
                     <span className="inline-flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-[#007BFF]" />
                       Page views
                     </span>
                     <span className="inline-flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-sky-600" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-cyan-400" />
                       Visitors
                     </span>
                   </div>
                   <div className="h-[280px] w-full">
                     {isLoading ? (
-                      <div className="grid h-full place-items-center text-sm text-slate-500">
+                      <div className="grid h-full place-items-center text-sm text-slate-400">
                         Loading traffic...
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={traffic} margin={{ top: 12, right: 12, bottom: 0, left: -16 }}>
-                          <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" vertical={false} />
+                          <CartesianGrid stroke="#1e3a5f" strokeDasharray="3 3" vertical={false} />
                           <XAxis
                             dataKey="label"
-                            tick={{ fill: "#64748b", fontSize: 12 }}
+                            tick={{ fill: "#94a3b8", fontSize: 12 }}
                             tickLine={false}
-                            axisLine={{ stroke: "#cbd5e1" }}
+                            axisLine={{ stroke: "#29476a" }}
                             minTickGap={24}
                           />
                           <YAxis
                             allowDecimals={false}
-                            tick={{ fill: "#64748b", fontSize: 12 }}
+                            tick={{ fill: "#94a3b8", fontSize: 12 }}
                             tickLine={false}
                             axisLine={false}
                             width={40}
@@ -267,16 +275,18 @@ const AdminAnalytics = () => {
                           <Tooltip
                             contentStyle={{
                               borderRadius: 12,
-                              borderColor: "#e2e8f0",
-                              boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
+                              backgroundColor: "#0b1d33",
+                              color: "#f1f5f9",
+                              borderColor: "#29476a",
+                              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
                             }}
-                            labelStyle={{ color: "#0f172a", fontWeight: 600 }}
+                            labelStyle={{ color: "#f1f5f9", fontWeight: 600 }}
                           />
                           <Line
                             type="monotone"
                             dataKey="pageViews"
                             name="Page views"
-                            stroke="#d9a441"
+                            stroke="#007BFF"
                             strokeWidth={2.5}
                             dot={false}
                             activeDot={{ r: 4 }}
@@ -285,7 +295,7 @@ const AdminAnalytics = () => {
                             type="monotone"
                             dataKey="visitors"
                             name="Visitors"
-                            stroke="#0284c7"
+                            stroke="#22d3ee"
                             strokeWidth={2}
                             dot={false}
                             activeDot={{ r: 4 }}
@@ -297,48 +307,48 @@ const AdminAnalytics = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-slate-200 bg-white text-slate-950 shadow-sm">
+              <Card className="border-[#17365a] bg-[#0b1d33] text-slate-100 shadow-lg shadow-black/20">
                 <CardHeader>
                   <CardTitle className="text-xl">Page Performance</CardTitle>
-                  <CardDescription className="text-slate-500">
+                  <CardDescription className="text-slate-400">
                     Detailed page view statistics
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
-                    <p className="py-8 text-center text-sm text-slate-500">Loading page statistics...</p>
+                    <p className="py-8 text-center text-sm text-slate-400">Loading page statistics...</p>
                   ) : pagePerformance.length === 0 ? (
                     <div className="py-10 text-center">
-                      <CalendarDays className="mx-auto mb-3 h-9 w-9 text-amber-500" />
+                      <CalendarDays className="mx-auto mb-3 h-9 w-9 text-[#007BFF]" />
                       <p className="font-medium">No page views for this period</p>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-sm text-slate-400">
                         Visits will appear here as people browse the site.
                       </p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-slate-200">
+                    <div className="divide-y divide-[#17365a]">
                       {pagePerformance.map(({ path, views: pageViews }) => (
                         <div
                           key={path}
                           className="flex items-center gap-4 py-4 first:pt-1 last:pb-1"
                         >
-                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-amber-50 text-amber-600">
+                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#007BFF]/10 text-[#4da3ff]">
                             <CalendarDays className="h-5 w-5" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="truncate font-medium">{path}</p>
-                            <p className="text-sm text-slate-500">Page path</p>
+                            <p className="text-sm text-slate-400">Page path</p>
                           </div>
                           <div className="shrink-0 text-right">
                             <p className="font-bold tabular-nums">{pageViews.toLocaleString()}</p>
-                            <p className="text-sm text-slate-500">views</p>
+                            <p className="text-sm text-slate-400">views</p>
                           </div>
                           <div
                             aria-hidden="true"
-                            className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-slate-100 sm:block"
+                            className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-[#17365a] sm:block"
                           >
                             <div
-                              className="h-full rounded-full bg-amber-400"
+                              className="h-full rounded-full bg-[#007BFF]"
                               style={{ width: `${(pageViews / highestPageCount) * 100}%` }}
                             />
                           </div>
@@ -372,24 +382,24 @@ function MetricCard({
   return (
     <Card
       className={cn(
-        "border-slate-200 bg-white text-slate-950 shadow-sm",
-        highlighted && "border-amber-200 bg-amber-50/70"
+        "border-[#17365a] bg-[#0b1d33] text-slate-100 shadow-sm",
+        highlighted && "border-[#007BFF]/50 bg-[#007BFF]/10"
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle
           className={cn(
             "text-sm font-medium",
-            highlighted ? "text-amber-700" : "text-slate-800"
+            highlighted ? "text-[#68b0ff]" : "text-slate-200"
           )}
         >
           {label}
         </CardTitle>
-        <span className={highlighted ? "text-amber-600" : "text-slate-400"}>{icon}</span>
+        <span className={highlighted ? "text-[#007BFF]" : "text-slate-400"}>{icon}</span>
       </CardHeader>
       <CardContent>
         <p className="text-2xl font-bold tracking-tight">{value}</p>
-        <p className="mt-1 text-sm text-slate-500">{description}</p>
+        <p className="mt-1 text-sm text-slate-400">{description}</p>
       </CardContent>
     </Card>
   );

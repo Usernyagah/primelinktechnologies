@@ -87,6 +87,10 @@ Checkout uses **Safaricom STK Push** via Vercel serverless functions (`/api/mpes
 
 Optional: set `FIREBASE_SERVICE_ACCOUNT` (JSON) in Vercel so paid orders update automatically when M-Pesa sends the callback.
 
+### Analytics
+
+Page tracking uses the Firebase configuration already used by the website and writes directly to Firestore under the existing analytics security rules. It does not require a Firebase service account or an analytics hash secret in Vercel. Unique visitors are estimated using a random browser ID stored in local storage; the same browser is counted once, while different browsers or devices are counted separately. Clearing browser storage can generate a new ID.
+
 Deploy Firestore rules: `firebase deploy --only firestore:rules`
 
 ## Getting Started

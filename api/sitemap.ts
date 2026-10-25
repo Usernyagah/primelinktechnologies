@@ -4,6 +4,7 @@ import {
   SITE_URL,
   STATIC_SITEMAP_ROUTES,
 } from "./lib/sitemap-data";
+import { getAdminFirestore } from "./lib/firebase-admin";
 
 async function getProductIds(): Promise<string[]> {
   if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
@@ -11,16 +12,7 @@ async function getProductIds(): Promise<string[]> {
   }
 
   try {
-    const { initializeApp, cert, getApps } = await import("firebase-admin/app");
-    const { getFirestore } = await import("firebase-admin/firestore");
-
-    if (getApps().length === 0) {
-      initializeApp({
-        credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
-      });
-    }
-
-    const snapshot = await getFirestore().collection("products").get();
+    const snapshot = await getAdminFirestore().collection("products").get();
     if (snapshot.empty) return [...SEED_PRODUCT_IDS];
 
     return snapshot.docs.map((doc) => doc.id);

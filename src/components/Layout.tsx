@@ -14,13 +14,12 @@ export const Layout = () => {
   const analyticsIdentity = useMemo(createAnalyticsIdentity, []);
 
   useEffect(() => {
-    const updateSession = (countPageView = false) =>
+    const updateSession = () =>
       pageViewsApi
-        .touchSession(
+        .heartbeat(
           analyticsIdentity.visitorId,
           analyticsIdentity.sessionId,
-          analyticsIdentity.startedAt,
-          countPageView
+          analyticsIdentity.sessionStartedAt
         )
         .catch((error: unknown) => {
           console.error("Failed to update analytics session:", error);
@@ -44,7 +43,10 @@ export const Layout = () => {
 
       if (viewId) {
         void pageViewsApi
-          .updateDuration(viewId, Math.floor((Date.now() - startedAt) / 1000))
+          .updateDuration(
+            viewId,
+            Math.floor((Date.now() - startedAt) / 1000)
+          )
           .catch((error: unknown) => {
             console.error("Failed to save page visit duration:", error);
           });
@@ -52,7 +54,12 @@ export const Layout = () => {
     };
 
     void pageViewsApi
-      .track(pathname, analyticsIdentity.visitorId, analyticsIdentity.sessionId)
+      .track(
+        pathname,
+        analyticsIdentity.visitorId,
+        analyticsIdentity.sessionId,
+        analyticsIdentity.sessionStartedAt
+      )
       .then((id) => {
         viewId = id;
         if (isComplete) {
@@ -64,16 +71,6 @@ export const Layout = () => {
       })
       .catch((error: unknown) => {
         console.error("Failed to record page view:", error);
-      });
-    void pageViewsApi
-      .touchSession(
-        analyticsIdentity.visitorId,
-        analyticsIdentity.sessionId,
-        analyticsIdentity.startedAt,
-        true
-      )
-      .catch((error: unknown) => {
-        console.error("Failed to update analytics session:", error);
       });
 
     window.addEventListener("pagehide", saveDuration);
